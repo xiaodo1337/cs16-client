@@ -29,6 +29,7 @@
 #ifndef DRAW_UTIL_H
 #define DRAW_UTIL_H
 // Drawing primitives
+#include "utflib.h"
 
 #define DHN_DRAWZERO 1
 #define DHN_2DIGITS  2
@@ -178,6 +179,37 @@ public:
 			FillRGBA( x + wide - 1, y + 1,        1,        tall - 1, 255, 140, 0, 255 );
 			FillRGBA( x,            y + tall - 1, wide - 1, 1,        255, 140, 0, 255 );
 		}
+	}
+
+	/*
+	============================
+	Con_UtfProcessChar
+
+	Convert utf char to current font's single-byte encoding
+	============================
+	*/
+	static inline int Con_UtfProcessCharForce( int in )
+	{
+		// TODO: get rid of global state where possible
+		static utfstate_t state = { 0 };
+
+		uint32_t ch = Q_DecodeUTF8( &state, in );
+
+		if ( g_codepage == 1251 )
+			return Q_UnicodeToCP1251( ch );
+		if ( g_codepage == 1252 )
+			return Q_UnicodeToCP1252( ch );
+
+		return ch; // not implemented yet
+	}
+
+	static inline int Con_UtfProcessChar( int in )
+	{
+		if ( !g_accept_utf8 ) // incoming character is not a UTF-8 sequence
+			return in;
+
+		// otherwise, decode it and convert to selected codepage
+		return Con_UtfProcessCharForce( in );
 	}
 
 	static void Draw2DQuad( float x1, float y1, float x2, float y2 );

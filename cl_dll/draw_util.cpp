@@ -33,7 +33,6 @@ version.
 #include "triangleapi.h"
 #include <string.h>
 #include <ctype.h>
-#include "utflib.h"
 
 float DrawUtils::color[3];
 
@@ -58,37 +57,6 @@ qboolean g_accept_utf8;
 
 cvar_t *con_charset;
 cvar_t *cl_charset;
-
-/*
-============================
-Con_UtfProcessChar
-
-Convert utf char to current font's single-byte encoding
-============================
-*/
-int Con_UtfProcessCharForce( int in )
-{
-	// TODO: get rid of global state where possible
-	static utfstate_t state = { 0 };
-
-	uint32_t ch = Q_DecodeUTF8( &state, in );
-
-	if( g_codepage == 1251 )
-		return Q_UnicodeToCP1251( ch );
-	if( g_codepage == 1252 )
-		return Q_UnicodeToCP1252( ch );
-
-	return '?'; // not implemented yet
-}
-
-int Con_UtfProcessChar( int in )
-{
-	if( !g_accept_utf8 ) // incoming character is not a UTF-8 sequence
-		return in;
-
-	// otherwise, decode it and convert to selected codepage
-	return Con_UtfProcessCharForce( in );
-}
 
 int DrawUtils::DrawHudString( int xpos, int ypos, int iMaxX, const char *str, int r, int g, int b, float scale, bool drawing )
 {
