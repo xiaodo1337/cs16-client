@@ -87,10 +87,10 @@ int DrawUtils::DrawHudString( int xpos, int ypos, int iMaxX, const char *str, in
 				UnpackRGB( r, g, b, RGB_GRAY );
 				continue;
 			case 'R':
-				if ( drawing )
-					return xpos;
-
-				return DrawHudStringReverse( iMaxX, ypos, first_xpos, szIt, r, g, b, scale, true ); // set 'drawing' to true, to stop when '\R' is catched
+				//if( drawing ) return xpos;
+				//return DrawHudStringReverse( iMaxX, ypos, first_xpos, szIt, r, g, b, true ); // set 'drawing' to true, to stop when '\R' is catched
+				xpos = iMaxX - gHUD.GetCharWidth('M') * 10;
+				++szIt;
 			}
 		}
 		else if( IsColorString( szIt ) )
